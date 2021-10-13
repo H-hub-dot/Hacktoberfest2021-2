@@ -1,0 +1,133 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+class node
+{
+    public:
+    int data;
+    node *left, *right;
+};
+ 
+// Helper function that allocates a
+// new node with the given data and
+// NULL left and right pointers.
+node* newNode(int data)
+{
+    node* temp = new node();
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+ 
+// Postorder traversal without recursion
+// and without stack
+void postOrderConstSpace(node* root)
+{
+    if (root == NULL)
+            return;
+ 
+        node* current = newNode(-1);
+        node* pre = NULL;
+        node* prev = NULL;
+        node* succ = NULL;
+        node* temp = NULL;
+         
+        current->left = root;
+         
+    while (current)
+    {
+         
+        // If left child is null.
+        // Move to right child.
+        if (current->left == NULL)
+        {
+            current = current->right;
+        }
+        else
+        {
+            pre = current->left;
+             
+            // Inorder predecessor
+            while (pre->right &&
+                pre->right != current)
+                pre = pre->right;
+             
+            // The connection between current and
+            // predecessor is made
+            if (pre->right == NULL)
+            {
+                 
+                // Make current as the right
+                // child of the right most node
+                pre->right = current;
+                 
+                // Traverse the left child
+                current = current->left;
+            }
+            else
+            {
+                pre->right = NULL;
+                succ = current;
+                current = current->left;
+                prev = NULL;
+                 
+                // Traverse along the right
+                // subtree to the
+                // right-most child
+                while (current != NULL)
+                {
+                    temp = current->right;
+                    current->right = prev;
+                    prev = current;
+                    current = temp;
+                }
+                 
+                // Traverse back
+                // to current's left child
+                // node
+                while (prev != NULL)
+                {
+                    cout << prev->data << " ";
+                    temp = prev->right;
+                    prev->right = current;
+                    current = prev;
+                    prev = temp;
+                }
+ 
+                current = succ;
+                current = current->right;
+            }
+        }
+    }
+}
+ 
+// Driver code
+int main()
+{
+   /* Constructed tree is as follows:-
+                      1
+                   /     \
+                  2       3
+                 / \     / \
+                4   5   6   7
+                   / \
+                  8   9
+      */
+    node* root = NULL;
+ 
+    root = newNode(1);
+    root->left = newNode(2);
+    root->right = newNode(3);
+ 
+    root->left->left = newNode(4);
+    root->left->right = newNode(5);
+ 
+    root->right->left = newNode(6);
+    root->right->right = newNode(7);
+ 
+    root->left->right->left = newNode(8);
+    root->left->right->right = newNode(9);
+     
+    postOrderConstSpace(root);
+    return 0;
+}
